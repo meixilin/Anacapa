@@ -91,7 +91,7 @@ mkdir -p ${OUT}/${MB}/${MB}bowtie2_out
 
 echo "${MB}"
 echo "Run Bowtie2 on merged, forward, and reverse dada2 ASV fasta file"
-# find best taxonomic hits for single reads in using bowtie2's global alignment mode (end-to-end) first.  It only considers full length alighnments, and recovers up to -k returns (default = 100). The reads not assigned in global mode are then run in local alighnment mode. -p is the number of threads --no-hd and --no-sq suppress the header lines --no-unal means do not add unaligned reads to the sam file (output). --very-sensitive is a preset option in bowtie2 is slow but designed to be more accurate and sensitive
+# find best taxonomic hits for single reads in using bowtie2's global alignment mode (end-to-end) first.  It only considers full length alighnments, and recovers up to -k returns (default = 100). The reads not assigned in global mode are then run in local alighnment mode. -p is the number of threads --no-head and --no-sq suppress the header lines --no-unal means do not add unaligned reads to the sam file (output). --very-sensitive is a preset option in bowtie2 is slow but designed to be more accurate and sensitive
 
 list="merged forward reverse"
 
@@ -102,12 +102,12 @@ do
     echo ""
     echo "nochim_${str}${MB}.fasta exists"
     echo "end-to-end"
-    bowtie2 -x ${DB}/${MB}/${MB}_bowtie2_database/${MB}_bowtie2_index  -f -U ${OUT}/${MB}/${MB}dada2_out/nochim_${str}${MB}.fasta -S ${OUT}/${MB}/${MB}bowtie2_out/single_read_${str}_${MB}_end_to_end.sam --no-hd --no-sq --very-sensitive --end-to-end --no-unal -p 120 -k 100 --un ${OUT}/${MB}/${MB}bowtie2_out/single_read_${str}_${MB}_end_to_end_reject.fasta
+    bowtie2 -x ${DB}/${MB}/${MB}_bowtie2_database/${MB}_bowtie2_index  -f -U ${OUT}/${MB}/${MB}dada2_out/nochim_${str}${MB}.fasta -S ${OUT}/${MB}/${MB}bowtie2_out/single_read_${str}_${MB}_end_to_end.sam --no-head --no-sq --very-sensitive --end-to-end --no-unal -p 120 -k 100 --un ${OUT}/${MB}/${MB}bowtie2_out/single_read_${str}_${MB}_end_to_end_reject.fasta
     date
     #single read local mode
     # reads that do not get hits in global alignment mode are run through local alignment.  This mode does not require the hit to be the entire length of the query.  This includes partial matches to full length references, or full matches to short references.
     echo "local"
-    bowtie2 -x ${DB}/${MB}/${MB}_bowtie2_database/${MB}_bowtie2_index  -f -U ${OUT}/${MB}/${MB}bowtie2_out/single_read_${str}_${MB}_end_to_end_reject.fasta -S ${OUT}/${MB}/${MB}bowtie2_out/single_read_${str}_${MB}_local.sam --no-hd --no-sq --very-sensitive --local --no-unal -p 120 -k 100 --un ${OUT}/${MB}/${MB}bowtie2_out/single_read_${str}_${MB}_end_to_end_and_local_reject.fasta
+    bowtie2 -x ${DB}/${MB}/${MB}_bowtie2_database/${MB}_bowtie2_index  -f -U ${OUT}/${MB}/${MB}bowtie2_out/single_read_${str}_${MB}_end_to_end_reject.fasta -S ${OUT}/${MB}/${MB}bowtie2_out/single_read_${str}_${MB}_local.sam --no-head --no-sq --very-sensitive --local --no-unal -p 120 -k 100 --un ${OUT}/${MB}/${MB}bowtie2_out/single_read_${str}_${MB}_end_to_end_and_local_reject.fasta
     date
   else
     echo ""
@@ -126,10 +126,10 @@ then
   echo ""
   echo "nochim_unmerged${MB}.fasta files exists"
   echo "end-to-end"
-  bowtie2 -x ${DB}/${MB}/${MB}_bowtie2_database/${MB}_bowtie2_index  -f -1 ${OUT}/${MB}/${MB}dada2_out/nochim_unmerged${MB}F.fasta -2 ${OUT}/${MB}/${MB}dada2_out/nochim_unmerged${MB}R.fasta -S ${OUT}/${MB}/${MB}bowtie2_out/paired_unmerged_read_${MB}_end_to_end.sam --no-hd --no-sq --very-sensitive --end-to-end --no-unal -p 120 -k 100 --fr --rf --no-mixed --un-conc ${OUT}/${MB}/${MB}bowtie2_out/paired_unmerged_read_${MB}_end_to_end_reject.fasta --no-discordant
+  bowtie2 -x ${DB}/${MB}/${MB}_bowtie2_database/${MB}_bowtie2_index  -f -1 ${OUT}/${MB}/${MB}dada2_out/nochim_unmerged${MB}F.fasta -2 ${OUT}/${MB}/${MB}dada2_out/nochim_unmerged${MB}R.fasta -S ${OUT}/${MB}/${MB}bowtie2_out/paired_unmerged_read_${MB}_end_to_end.sam --no-head --no-sq --very-sensitive --end-to-end --no-unal -p 120 -k 100 --fr --rf --no-mixed --un-conc ${OUT}/${MB}/${MB}bowtie2_out/paired_unmerged_read_${MB}_end_to_end_reject.fasta --no-discordant
   #unmerged pair reads local
   echo "local"
-  bowtie2 -x ${DB}/${MB}/${MB}_bowtie2_database/${MB}_bowtie2_index -f -1 ${OUT}/${MB}/${MB}bowtie2_out/paired_unmerged_read_${MB}_end_to_end_reject.1.fasta -2 ${OUT}/${MB}/${MB}bowtie2_out/paired_unmerged_read_${MB}_end_to_end_reject.2.fasta -S ${OUT}/${MB}/${MB}bowtie2_out/paired_unmerged_read_${MB}_local.sam --no-hd --no-sq --very-sensitive --local --no-unal -p 120 -k 100 --un-conc ${OUT}/${MB}/${MB}bowtie2_out/paired_unmerged_read_${MB}_end_to_end_and_local_reject.fasta --no-discordant
+  bowtie2 -x ${DB}/${MB}/${MB}_bowtie2_database/${MB}_bowtie2_index -f -1 ${OUT}/${MB}/${MB}bowtie2_out/paired_unmerged_read_${MB}_end_to_end_reject.1.fasta -2 ${OUT}/${MB}/${MB}bowtie2_out/paired_unmerged_read_${MB}_end_to_end_reject.2.fasta -S ${OUT}/${MB}/${MB}bowtie2_out/paired_unmerged_read_${MB}_local.sam --no-head --no-sq --very-sensitive --local --no-unal -p 120 -k 100 --un-conc ${OUT}/${MB}/${MB}bowtie2_out/paired_unmerged_read_${MB}_end_to_end_and_local_reject.fasta --no-discordant
 else
   echo ""
   echo "nochim_unmerged${MB}.fasta files do not exist"
