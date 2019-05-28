@@ -1,3 +1,5 @@
+# -e min_merge_length
+
 In `anacapa_QC_dada2.sh`, one option is:
 
 ```bash
@@ -68,4 +70,22 @@ If (pairedsum_unmerged_table$totalseq >= barC_length) {
 }
 ```
 
-So in order to keep more `paired_unmerged reads`, `barC_length` should be smaller (require less overlap). 
+So in order to keep more `paired_unmerged reads`, `barC_length` should be smaller (require less overlap).
+
+# -x -y additional trimming
+
+This step occurred at cutadapt, not the same as the `dada2` filtering
+This does not have al ot of problem, since the read gets bad greatly at the end.
+
+```bash
+  ${CUTADAPT} -e ${PCTADE:=$ERROR_PS} -f ${FILE_TYPE_PS} -g ${F_PRIM}  -u -${FETRIM:=$MS_F_TRIM} -o ${OUT}/QC/cutadapt_fastq/primer_sort/{name}_${j}_Paired_1.fastq  ${OUT}/QC/cutadapt_fastq/${j}_qcPaired_1.fastq >> ${OUT}/Run_info/cutadapt_out/cutadapt-report.txt
+```
+
+# -m minimum length after cutting
+
+This is done by fastx_toolkit. Note this step is done after the first cutadapt but before the second, so the length is `minimum single read amplicon + primer length `
+
+```bash
+# stringent quality fileter to get rid of the junky reads. It mostly chops the lowquality reads off of the ends. See the documentation for details. The default average quality score for retained bases is 35 and the minimum length is 100.  Any reads that do not meet that criteria are removed
+fastq_quality_trimmer -t ${QUALS:=$MIN_QUAL} -l ${MILEN:=$MIN_LEN}  -i ${OUT}/QC/cutadapt_fastq/untrimmed/${j}_Paired_1.fastq -o ${OUT}/QC/cutadapt_fastq/${j}_qcPaired_1.fastq -Q33 #trim pair one
+```
